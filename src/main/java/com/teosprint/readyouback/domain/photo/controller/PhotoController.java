@@ -1,5 +1,6 @@
 package com.teosprint.readyouback.domain.photo.controller;
 
+import com.teosprint.readyouback.domain.photo.dto.response.PhotoResponse;
 import com.teosprint.readyouback.domain.photo.service.AwsS3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +22,7 @@ public class PhotoController {
 
     @Operation(summary = "이미지 첨부", description = "이미지를 첨부한 후 링크를 반환 받는 API")
     @PostMapping
-    public String uploadImage(@RequestPart(name = "image") MultipartFile image) throws IOException {
+    public PhotoResponse uploadImage(@RequestPart(name = "image") MultipartFile image) throws IOException {
         return awsS3Service.uploadImage(image);
     }
 }
