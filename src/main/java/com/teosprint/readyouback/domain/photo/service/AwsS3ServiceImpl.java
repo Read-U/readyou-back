@@ -26,9 +26,10 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
         ObjectMetadata objMeta = new ObjectMetadata();
         objMeta.setContentLength(profileImage.getInputStream().available());
+        objMeta.setContentType(profileImage.getContentType());
 
         amazonS3.putObject(bucket, s3FileName, profileImage.getInputStream(), objMeta);
-        log.info(String.format("프로필 사진 업로드 [파일명 : %s]", s3FileName));
+        log.info(String.format("사진 업로드 [파일명 : %s]", s3FileName));
 
         return amazonS3.getUrl(bucket, s3FileName).toString();
     }
