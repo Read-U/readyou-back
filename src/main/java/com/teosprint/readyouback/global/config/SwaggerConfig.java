@@ -3,7 +3,7 @@ package com.teosprint.readyouback.global.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,7 +22,7 @@ public class SwaggerConfig {
     public GroupedOpenApi authApi() {
         return GroupedOpenApi.builder()
                 .group("image")
-                .pathsToMatch("/api/auth/**")
+                .pathsToMatch("/api/img/**")
                 .build();
     }
 
@@ -30,7 +30,7 @@ public class SwaggerConfig {
     public GroupedOpenApi memberApi() {
         return GroupedOpenApi.builder()
                 .group("youtube")
-                .pathsToMatch("/api/member/**")
+                .pathsToMatch("/api/youtube/**")
                 .build();
     }
 
@@ -38,7 +38,7 @@ public class SwaggerConfig {
     public GroupedOpenApi alarmApi() {
         return GroupedOpenApi.builder()
                 .group("bedge")
-                .pathsToMatch("/api/alarm/**")
+                .pathsToMatch("/api/bedge/**")
                 .build();
     }
 
