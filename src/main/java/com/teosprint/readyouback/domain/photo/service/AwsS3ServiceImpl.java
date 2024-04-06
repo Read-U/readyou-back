@@ -2,6 +2,7 @@ package com.teosprint.readyouback.domain.photo.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.teosprint.readyouback.domain.photo.dto.response.PhotoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     private final AmazonS3 amazonS3;
 
     @Override
-    public String uploadImage(MultipartFile profileImage) throws IOException {
+    public PhotoResponse uploadImage(MultipartFile profileImage) throws IOException {
         String s3FileName = UUID.randomUUID() + "-" + profileImage.getOriginalFilename();
 
         ObjectMetadata objMeta = new ObjectMetadata();
@@ -31,6 +32,6 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         amazonS3.putObject(bucket, s3FileName, profileImage.getInputStream(), objMeta);
         log.info(String.format("사진 업로드 [파일명 : %s]", s3FileName));
 
-        return amazonS3.getUrl(bucket, s3FileName).toString();
+        return new PhotoResponse(amazonS3.getUrl(bucket, s3FileName).toString());
     }
 }
