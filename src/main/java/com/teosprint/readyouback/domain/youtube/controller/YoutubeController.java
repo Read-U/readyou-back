@@ -20,12 +20,7 @@ public class YoutubeController {
 
     @GetMapping
     public VideoIframeResponse getVideoIframe(@RequestParam String link) {
-        try {
-            System.out.println(link);
-            return youtubeService.getVideoIframe(link);
-        } catch (IOException e) {
-            log.error("비디오 읽기 에러");
-            throw new RuntimeException(e);
-        }
+        log.info(link);
+        return youtubeService.getVideoIframe(link);
     }
 }
