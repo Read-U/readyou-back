@@ -20,3 +20,7 @@ springdoc:
     path: /api/swagger-ui
   api-docs:
     path: /api/swagger-ui.html
+
+youtube:
+  api:
+    key: ${PUBLIC_KEY}

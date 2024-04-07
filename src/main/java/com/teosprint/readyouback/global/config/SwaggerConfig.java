@@ -19,7 +19,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public GroupedOpenApi authApi() {
+    public GroupedOpenApi imageApi() {
         return GroupedOpenApi.builder()
                 .group("image")
                 .pathsToMatch("/api/img/**")
@@ -27,7 +27,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public GroupedOpenApi memberApi() {
+    public GroupedOpenApi youtubeApi() {
         return GroupedOpenApi.builder()
                 .group("youtube")
                 .pathsToMatch("/api/youtube/**")
@@ -35,7 +35,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public GroupedOpenApi alarmApi() {
+    public GroupedOpenApi bedgeApi() {
         return GroupedOpenApi.builder()
                 .group("bedge")
                 .pathsToMatch("/api/bedge/**")
