@@ -21,8 +21,8 @@ public class YoutubeServiceImpl {
     private String apiKey;
     private final YouTube youTube;
 
-    public VideoIframeResponse getVideoIframe(String link) {
-        YouTube.Videos.List request = null;
+    public VideoIframeResponse getVideoId(String link) {
+        YouTube.Videos.List request;
         try {
             request = youTube.videos().list(Collections.singletonList("player"));
         } catch (IOException e) {
@@ -33,43 +33,39 @@ public class YoutubeServiceImpl {
         request.setKey(apiKey);
         request.setId(Collections.singletonList(videoId));
 
-        List<com.google.api.services.youtube.model.Video> videoList = null;
+        List<com.google.api.services.youtube.model.Video> videoList;
         try {
             videoList = request.execute().getItems();
         } catch (IOException e) {
             throw new CustomException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    200,
-                    "embeded link 조회 실패: " + e.getMessage()
+                    HttpStatus.BAD_REQUEST,
+                    100,
+                    "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요."
             );
         }
 
         if (videoList != null && !videoList.isEmpty()) {
             System.out.println(videoList.get(0).getPlayer().getEmbedHtml());
-            return new VideoIframeResponse(videoList.get(0).getPlayer().getEmbedHtml());
+            return new VideoIframeResponse(videoList.get(0).getId());
         } else {
-            throw new CustomException(HttpStatus.BAD_REQUEST, 100, "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요.");
+            throw new CustomException(
+                    HttpStatus.BAD_REQUEST,
+                    100,
+                    "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요."
+            );
         }
     }
 
     private static String extractVideoId(String link) {
-        String videoId;
-
         // 유형 1: https://youtu.be/{videoId}
         Pattern pattern1 = Pattern.compile("youtu.be/(\\w+)");
         Matcher matcher1 = pattern1.matcher(link);
-        if (matcher1.find()) {
-            videoId = matcher1.group(1);
-            return videoId;
-        }
+        if (matcher1.find()) return matcher1.group(1);
 
         // 유형 2: https://www.youtube.com/live/{videoId}
         Pattern pattern2 = Pattern.compile("youtube.com/live/(\\w+)");
         Matcher matcher2 = pattern2.matcher(link);
-        if (matcher2.find()) {
-            videoId = matcher2.group(1);
-            return videoId;
-        }
+        if (matcher2.find()) return matcher2.group(1);
 
         // 유형 3: https://www.youtube.com/watch?v={videoId}
         String[] parts = link.split("v=");
@@ -78,7 +74,10 @@ public class YoutubeServiceImpl {
 
     private void checkVideoId(String videoId) {
         if (videoId == null || videoId.isEmpty() || videoId.length() == 1) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, 100, "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요.");
+            throw new CustomException(
+                    HttpStatus.BAD_REQUEST,
+                    100,
+                    "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요.");
         }
     }
 }

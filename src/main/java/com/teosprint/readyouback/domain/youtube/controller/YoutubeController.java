@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @Slf4j
 @RestController
 @RequestMapping("/api/youtube")
@@ -19,8 +17,8 @@ public class YoutubeController {
     private final YoutubeServiceImpl youtubeService;
 
     @GetMapping
-    public VideoIframeResponse getVideoIframe(@RequestParam String link) {
+    public VideoIframeResponse getVideoId(@RequestParam String link) {
         log.info(link);
-        return youtubeService.getVideoIframe(link);
+        return youtubeService.getVideoId(link);
     }
 }

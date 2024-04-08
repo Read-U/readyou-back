@@ -27,12 +27,16 @@ public class ControllerAdvice {
     @ExceptionHandler(NullPointerException.class)
     private ResponseEntity<String> nullPointerException(NullPointerException e) {
         log.error(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("널 포인터 오류 발생");
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR).
+                body("널 포인터 오류 발생");
     }
 
     @ExceptionHandler(Exception.class)
     private ResponseEntity<String> exception(Exception e) {
         log.error(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(e.getMessage());
     }
 }
