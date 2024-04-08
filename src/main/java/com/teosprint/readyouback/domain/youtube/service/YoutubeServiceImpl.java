@@ -1,7 +1,8 @@
 package com.teosprint.readyouback.domain.youtube.service;
 
 import com.google.api.services.youtube.YouTube;
-import com.teosprint.readyouback.domain.youtube.dto.response.VideoIframeResponse;
+import com.google.api.services.youtube.model.Video;
+import com.teosprint.readyouback.domain.youtube.dto.response.VideoIdResponse;
 import com.teosprint.readyouback.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,60 +17,33 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public class YoutubeServiceImpl {
+public class YoutubeServiceImpl implements YoutubeService {
     @Value("${youtube.api.key}")
     private String apiKey;
     private final YouTube youTube;
 
-    public VideoIframeResponse getVideoIframe(String link) {
-        YouTube.Videos.List request = null;
-        try {
-            request = youTube.videos().list(Collections.singletonList("player"));
-        } catch (IOException e) {
-            throw new IllegalStateException("유튜브 링크 조회용 request 객체 생성 실패");
-        }
+    public VideoIdResponse getVideoId(String link) {
         String videoId = extractVideoId(link);
         checkVideoId(videoId);
+
+        YouTube.Videos.List request = getYoutubeRequest();
         request.setKey(apiKey);
         request.setId(Collections.singletonList(videoId));
 
-        List<com.google.api.services.youtube.model.Video> videoList = null;
-        try {
-            videoList = request.execute().getItems();
-        } catch (IOException e) {
-            throw new CustomException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    200,
-                    "embeded link 조회 실패: " + e.getMessage()
-            );
-        }
-
-        if (videoList != null && !videoList.isEmpty()) {
-            System.out.println(videoList.get(0).getPlayer().getEmbedHtml());
-            return new VideoIframeResponse(videoList.get(0).getPlayer().getEmbedHtml());
-        } else {
-            throw new CustomException(HttpStatus.BAD_REQUEST, 100, "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요.");
-        }
+        List<Video> videoList = getVideoList(request);
+        return getVideoIdResponse(videoList);
     }
 
     private static String extractVideoId(String link) {
-        String videoId;
-
         // 유형 1: https://youtu.be/{videoId}
-        Pattern pattern1 = Pattern.compile("youtu.be/(\\w+)");
-        Matcher matcher1 = pattern1.matcher(link);
-        if (matcher1.find()) {
-            videoId = matcher1.group(1);
-            return videoId;
-        }
+        Pattern pattern = Pattern.compile("youtu.be/(\\w+)");
+        Matcher matcher = pattern.matcher(link);
+        if (matcher.find()) return matcher.group(1);
 
         // 유형 2: https://www.youtube.com/live/{videoId}
-        Pattern pattern2 = Pattern.compile("youtube.com/live/(\\w+)");
-        Matcher matcher2 = pattern2.matcher(link);
-        if (matcher2.find()) {
-            videoId = matcher2.group(1);
-            return videoId;
-        }
+        pattern = Pattern.compile("youtube.com/live/(\\w+)");
+        matcher = pattern.matcher(link);
+        if (matcher.find()) return matcher.group(1);
 
         // 유형 3: https://www.youtube.com/watch?v={videoId}
         String[] parts = link.split("v=");
@@ -78,7 +52,42 @@ public class YoutubeServiceImpl {
 
     private void checkVideoId(String videoId) {
         if (videoId == null || videoId.isEmpty() || videoId.length() == 1) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, 100, "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요.");
+            throw new CustomException(
+                    HttpStatus.BAD_REQUEST,
+                    100,
+                    "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요.");
+        }
+    }
+
+    private YouTube.Videos.List getYoutubeRequest() {
+        try {
+            return youTube.videos().list(Collections.singletonList("player"));
+        } catch (IOException e) {
+            throw new IllegalStateException("유튜브 링크 조회용 request 객체 생성 실패");
+        }
+    }
+
+    private List<Video> getVideoList(YouTube.Videos.List request) {
+        try {
+            return request.execute().getItems();
+        } catch (IOException e) {
+            throw new CustomException(
+                    HttpStatus.BAD_REQUEST,
+                    100,
+                    "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요."
+            );
+        }
+    }
+
+    private VideoIdResponse getVideoIdResponse(List<Video> videoList) {
+        if (videoList != null && !videoList.isEmpty()) {
+            return new VideoIdResponse(videoList.get(0).getId());
+        } else {
+            throw new CustomException(
+                    HttpStatus.BAD_REQUEST,
+                    100,
+                    "유효하지 않응 영상 링크입니다. 유튜브 영상 링크를 입력하세요."
+            );
         }
     }
 }
