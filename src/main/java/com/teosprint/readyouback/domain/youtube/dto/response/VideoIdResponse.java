@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class VideoIframeResponse {
+public class VideoIdResponse {
     private String videoId;
 }

@@ -1,5 +1,7 @@
 package com.teosprint.readyouback.domain.youtube.service;
 
+import com.teosprint.readyouback.domain.youtube.dto.response.VideoIdResponse;
+
 public interface YoutubeService {
-    String getVideoId(String link);
+    VideoIdResponse getVideoId(String link);
 }
